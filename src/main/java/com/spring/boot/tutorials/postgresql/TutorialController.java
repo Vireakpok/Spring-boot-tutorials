@@ -1,4 +1,4 @@
-package com.example.demo.postgresql;
+package com.spring.boot.tutorials.postgresql;
 
 
 import io.swagger.v3.oas.annotations.Operation;

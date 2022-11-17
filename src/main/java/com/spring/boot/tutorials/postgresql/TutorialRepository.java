@@ -1,4 +1,4 @@
-package com.example.demo.postgresql;
+package com.spring.boot.tutorials.postgresql;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
