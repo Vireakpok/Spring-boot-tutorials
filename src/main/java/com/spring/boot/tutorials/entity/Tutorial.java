@@ -1,4 +1,4 @@
-package com.spring.boot.tutorials.postgresql;
+package com.spring.boot.tutorials.entity;
 
 import lombok.Getter;
 import lombok.Setter;
