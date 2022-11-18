@@ -58,24 +58,25 @@ public class TutorialController {
     @GetMapping(path = "/tutorials/{id}")
     public ResponseEntity<TutorialDTO> getTutorialById(@PathVariable("id") long id) {
         Optional<TutorialDTO> tutorialData = tutorialService.getTutorialById(id);
-        return tutorialData.isPresent() ? new ResponseEntity<>(tutorialData.get(), HttpStatus.OK) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return tutorialData.map(tutorialDTO -> new ResponseEntity<>(tutorialDTO, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping(path = "/tutorials")
-    public ResponseEntity<TutorialDTO> createTutorial(@RequestBody Tutorial tutorial) {
+    public ResponseEntity<TutorialDTO> createTutorial(@RequestBody TutorialDTO tutorialDTO) {
         try {
-            return new ResponseEntity<>(tutorialService.createTutorial(tutorial), HttpStatus.CREATED);
+            return new ResponseEntity<>(tutorialService.createTutorial(tutorialDTO), HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PutMapping(path = "/tutorials/{id}")
-    public ResponseEntity<TutorialDTO> updateTutorial(@PathVariable("id") long id, @RequestBody Tutorial tutorial) {
-        if (tutorialService.getTutorialById(id).isPresent()) {
-            return new ResponseEntity<>(tutorialService.updateTutorial(id, tutorial), HttpStatus.OK);
+    public ResponseEntity<TutorialDTO> updateTutorial(@PathVariable("id") long id, @RequestBody TutorialDTO tutorialDTO) {
+        TutorialDTO tutorialDTO1 = tutorialService.updateTutorial(id, tutorialDTO);
+        if (tutorialDTO1 != null) {
+            return new ResponseEntity<>(tutorialDTO1, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
         }
     }
 

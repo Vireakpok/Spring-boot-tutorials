@@ -6,7 +6,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class TutorialDTO {
-    private long id;
     private String title;
     private String description;
     private boolean published;
