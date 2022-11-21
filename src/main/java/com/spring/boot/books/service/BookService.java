@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,8 @@ public class BookService {
 
   public List<BookDTO> getAllBooks(String title) {
     List<BookDTO> results = new ArrayList<BookDTO>();
-    if (title == null) {
+    boolean isEmptyTitle = StringUtils.isEmpty(title) || StringUtils.isBlank(title);
+    if (isEmptyTitle) {
       results = bookRepository.findAll().stream()
           .map(result -> config.modelMapper().map(result, BookDTO.class))
           .collect(Collectors.toList());
@@ -44,11 +46,11 @@ public class BookService {
     return book;
   }
 
-  public BookDTO updateBook(long id, BookDTO tutorialDTO) {
+  public BookDTO updateBook(long id, BookDTO bookDTO) {
     Optional<Book> foundTutorial = bookRepository.findById(id);
     if (foundTutorial.isPresent()) {
       Book source = foundTutorial.get();
-      config.modelMapper().map(tutorialDTO, source);
+      config.modelMapper().map(bookDTO, source);
       source.setId(id);
       return config.modelMapper().map(bookRepository.save(source), BookDTO.class);
     }

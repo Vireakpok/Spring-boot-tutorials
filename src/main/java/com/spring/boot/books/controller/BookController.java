@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.List;
 import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -77,11 +78,9 @@ public class BookController {
   public ResponseEntity<BookDTO> updateBook(@PathVariable("id") long id,
       @RequestBody BookDTO bookDTO) {
     BookDTO bookDTOUpdate = bookService.updateBook(id, bookDTO);
-    if (bookDTOUpdate != null) {
-      return new ResponseEntity<>(bookDTOUpdate, HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
-    }
+    boolean bookDTONotEmpty = StringUtils.isNotEmpty((CharSequence) bookDTOUpdate);
+    return bookDTONotEmpty ? new ResponseEntity<>(bookDTOUpdate, HttpStatus.OK)
+        : new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
   }
 
   @DeleteMapping(path = "/books/{id}")
