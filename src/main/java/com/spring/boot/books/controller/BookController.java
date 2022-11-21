@@ -10,8 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,10 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/v1")
+@RequiredArgsConstructor
 public class BookController {
 
-  @Autowired
-  private BookService bookService;
+  private final BookService bookService;
 
   @GetMapping(path = "/books")
   public ResponseEntity<List<BookDTO>> getAllBooks(
@@ -42,6 +42,54 @@ public class BookController {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  @GetMapping(path = "/books/pagination/sort_by/")
+  public ResponseEntity<List<BookDTO>> getAllBookPaginationByAsc(
+      @RequestParam(defaultValue = "0") Integer pageNo,
+      @RequestParam(defaultValue = "10") Integer pageSize,
+      @RequestParam(defaultValue = "title") String sortBy,
+      @RequestParam(defaultValue = "true") Boolean isASC) {
+    List<BookDTO> result = bookService.getBookPaginationSortBy(pageNo,
+        pageSize, sortBy, isASC);
+    return result.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+        : new ResponseEntity<>(result, HttpStatus.OK);
+  }
+
+  @GetMapping(path = "/books/search_by/title/")
+  public ResponseEntity<List<BookDTO>> getAllBookFilterByName(
+      @RequestParam(defaultValue = "0") Integer pageNo,
+      @RequestParam(defaultValue = "10") Integer pageSize,
+      @RequestParam(name = "title", required = true) String title) {
+    List<BookDTO> bookResult = bookService.getBookFilterByTitle(pageNo, pageSize, title);
+    return bookResult.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+        : new ResponseEntity<>(bookResult, HttpStatus.OK);
+  }
+
+  @GetMapping(path = "/books/search_by/description/")
+  public ResponseEntity<List<BookDTO>> getAllBookFilterByDescription(
+      @RequestParam(defaultValue = "0") Integer pageNo,
+      @RequestParam(defaultValue = "10") Integer pageSize,
+      @RequestParam(name = "description", required = true) String description
+  ) {
+    List<BookDTO> bookResult = bookService.getBookFilterByContent(pageNo, pageSize,
+        description);
+    return bookResult.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+        : new ResponseEntity<>(bookResult, HttpStatus.OK);
+  }
+
+
+  @GetMapping(path = "/books/search_by/content/")
+  public ResponseEntity<List<BookDTO>> getAllBookFilterByContent(
+      @RequestParam(defaultValue = "0") Integer pageNo,
+      @RequestParam(defaultValue = "10") Integer pageSize,
+      @RequestParam(name = "content", required = true) String content
+  ) {
+    List<BookDTO> bookResult = bookService.getBookFilterByContent(pageNo, pageSize,
+        content);
+    return bookResult.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
+        : new ResponseEntity<>(bookResult, HttpStatus.OK);
+  }
+
 
   @Operation(summary = "Get all book")
   @ApiResponses(value = {

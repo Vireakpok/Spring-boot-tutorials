@@ -12,7 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-@Entity(name = "books")
+@Entity(name = "Book")
 @Table(name = "books")
 @Setter
 @Getter
