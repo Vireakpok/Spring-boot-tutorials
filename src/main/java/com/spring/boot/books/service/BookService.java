@@ -1,10 +1,15 @@
 package com.spring.boot.books.service;
 
 import com.spring.boot.books.config.ModelMapperConfig;
+import com.spring.boot.books.dto.BookDetailDTO;
 import com.spring.boot.books.dto.BookDTO;
+import com.spring.boot.books.dto.BookPublicDTO;
 import com.spring.boot.books.entity.Book;
+import com.spring.boot.books.entity.Category;
 import com.spring.boot.books.repository.BookPaginationAndSortRepository;
 import com.spring.boot.books.repository.BookRepository;
+import com.spring.boot.books.repository.CategoryRepository;
+import com.spring.boot.books.service.specification.BookSpecification;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +28,7 @@ public class BookService {
   private final BookRepository bookRepository;
   private final ModelMapperConfig config;
   private final BookPaginationAndSortRepository bookPaginationAndSortRepository;
+  private final CategoryRepository categoryRepository;
 
   public List<BookDTO> getAllBooks(String title) {
     List<BookDTO> results;
@@ -97,18 +103,29 @@ public class BookService {
         .map(result -> config.modelMapper().map(result, BookDTO.class));
   }
 
-  public BookDTO createBook(BookDTO book) {
-    bookRepository.save(config.modelMapper().map(book, Book.class));
-    return book;
+  public Optional<BookDTO> createBook(BookDTO bookDTO) {
+    Book book = config.modelMapper().map(bookDTO, Book.class);
+    return Optional.of(config.modelMapper().map(bookRepository.save(book), BookDTO.class));
   }
 
-  public BookDTO updateBook(long id, BookDTO bookDTO) {
-    Optional<Book> foundTutorial = bookRepository.findById(id);
-    if (foundTutorial.isPresent()) {
-      Book source = foundTutorial.get();
-      config.modelMapper().map(bookDTO, source);
-      source.setId(id);
-      return config.modelMapper().map(bookRepository.save(source), BookDTO.class);
+  public BookDetailDTO updateBook(String oldTitle, String newTitle) {
+    Optional<Book> book = bookRepository.findByTitle(oldTitle);
+    if (book.isPresent()) {
+      Book source = book.get();
+      source.setTitle(newTitle);
+      return config.modelMapper().map(bookRepository.save(source), BookDetailDTO.class);
+    }
+    return null;
+  }
+
+  public BookDetailDTO addBookCategory(String title, String name) {
+    Optional<Book> book = bookRepository.findByTitle(title);
+    Optional<Category> category = categoryRepository.findByTitle(name);
+    if (book.isPresent() && category.isPresent()) {
+      Book result = book.get();
+      result.setCategory(category.get());
+      bookRepository.save(result);
+      return config.modelMapper().map(result, BookDetailDTO.class);
     }
     return null;
   }
@@ -121,9 +138,32 @@ public class BookService {
     bookRepository.deleteAll();
   }
 
-  public List<BookDTO> findByPublished() {
+  public List<BookPublicDTO> findByPublished() {
     return bookRepository.findByPublished(true).stream()
-        .map(result -> config.modelMapper().map(result, BookDTO.class))
+        .map(result -> config.modelMapper().map(result, BookPublicDTO.class))
         .collect(Collectors.toList());
+  }
+
+  public List<BookDetailDTO> getBookCategory(String title) {
+    Optional<Category> category = categoryRepository.findByTitle(title);
+    if (category.isPresent()) {
+      List<Book> results = bookPaginationAndSortRepository.findAll(
+          BookSpecification.getBookDetail(category.get().getId()));
+      return results.stream().map(result -> config.modelMapper().map(result, BookDetailDTO.class))
+          .collect(
+              Collectors.toList());
+    }
+    return new ArrayList<>();
+  }
+
+  public List<BookDetailDTO> getBookByPrice(long price) {
+    List<Book> results = bookPaginationAndSortRepository.findAll(
+        BookSpecification.getBookPrice(price));
+    if (results.isEmpty()) {
+      return new ArrayList<>();
+    }
+    return results.stream().map(result -> config.modelMapper().map(result, BookDetailDTO.class))
+        .collect(
+            Collectors.toList());
   }
 }

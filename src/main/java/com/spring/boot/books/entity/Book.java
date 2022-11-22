@@ -1,5 +1,7 @@
 package com.spring.boot.books.entity;
 
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -51,6 +53,10 @@ public class Book {
       columnDefinition = "BOOLEAN"
   )
   boolean published;
+
+  @ManyToOne
+  @JoinColumn(name = "categoryId", referencedColumnName = "id")
+  private Category category;
 
   @Override
   public String toString() {
