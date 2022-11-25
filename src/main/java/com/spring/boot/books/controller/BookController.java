@@ -3,7 +3,6 @@ package com.spring.boot.books.controller;
 import com.spring.boot.books.dto.BookDetailDTO;
 import com.spring.boot.books.dto.BookDTO;
 import com.spring.boot.books.dto.BookPublicDTO;
-import com.spring.boot.books.entity.Book;
 import com.spring.boot.books.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,12 +10,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.List;
-import java.util.Optional;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import javax.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,13 +37,8 @@ public class BookController {
   @GetMapping
   public ResponseEntity<List<BookDTO>> getAllBooks(
       @RequestParam(required = false) String title) {
-    try {
-      List<BookDTO> result = bookService.getAllBooks(title);
-      return result.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
-          : new ResponseEntity<>(result, HttpStatus.OK);
-    } catch (Exception e) {
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    List<BookDTO> result = bookService.getAllBooks(title);
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
   @GetMapping(path = "/pagination/sort_by")
@@ -54,30 +49,27 @@ public class BookController {
       @RequestParam(defaultValue = "true") Boolean isASC) {
     List<BookDTO> result = bookService.getBookPaginationSortBy(pageNo,
         pageSize, sortBy, isASC);
-    return result.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
-        : new ResponseEntity<>(result, HttpStatus.OK);
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
   @GetMapping(path = "/search_by/title")
   public ResponseEntity<List<BookDTO>> getAllBookFilterByName(
       @RequestParam(defaultValue = "0") Integer pageNo,
       @RequestParam(defaultValue = "10") Integer pageSize,
-      @RequestParam(name = "title", required = true) String title) {
+      @Size(max = 25, min = 5) @RequestParam(name = "title") String title) {
     List<BookDTO> bookResult = bookService.getBookFilterByTitle(pageNo, pageSize, title);
-    return bookResult.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
-        : new ResponseEntity<>(bookResult, HttpStatus.OK);
+    return new ResponseEntity<>(bookResult, HttpStatus.OK);
   }
 
   @GetMapping(path = "/search_by/description")
   public ResponseEntity<List<BookDTO>> getAllBookFilterByDescription(
       @RequestParam(defaultValue = "0") Integer pageNo,
       @RequestParam(defaultValue = "10") Integer pageSize,
-      @RequestParam(name = "description", required = true) String description
+      @RequestParam(name = "description") String description
   ) {
-    List<BookDTO> bookResult = bookService.getBookFilterByContent(pageNo, pageSize,
+    List<BookDTO> bookResult = bookService.getBookFilterByDescription(pageNo, pageSize,
         description);
-    return bookResult.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
-        : new ResponseEntity<>(bookResult, HttpStatus.OK);
+    return new ResponseEntity<>(bookResult, HttpStatus.OK);
   }
 
   @GetMapping(path = "/search_by/content")
@@ -88,8 +80,7 @@ public class BookController {
   ) {
     List<BookDTO> bookResult = bookService.getBookFilterByContent(pageNo, pageSize,
         content);
-    return bookResult.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
-        : new ResponseEntity<>(bookResult, HttpStatus.OK);
+    return new ResponseEntity<>(bookResult, HttpStatus.OK);
   }
 
   @Operation(summary = "Get all book")
@@ -98,7 +89,7 @@ public class BookController {
           responseCode = "200",
           description = "List all books",
           content = {@Content(mediaType = "application/Json",
-              schema = @Schema(implementation = Book.class))}
+              schema = @Schema(implementation = BookDTO.class))}
       ),
       @ApiResponse(
           responseCode = "404",
@@ -109,83 +100,60 @@ public class BookController {
 
   @GetMapping(path = "/{id}")
   public ResponseEntity<BookDTO> getBookById(@PathVariable("id") long id) {
-    Optional<BookDTO> book = bookService.getBookById(id);
-    return book.map(tutorialDTO -> new ResponseEntity<>(tutorialDTO, HttpStatus.OK))
-        .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    return new ResponseEntity<>(bookService.getBookById(id), HttpStatus.OK);
   }
 
   @PostMapping
-  public ResponseEntity<BookDTO> createBook(@RequestBody BookDTO bookDTO) {
-    try {
-      Optional<BookDTO> result = bookService.createBook(bookDTO);
-      return result.map(dto -> new ResponseEntity<>(dto, HttpStatus.CREATED))
-          .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE));
-    } catch (Exception e) {
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  public ResponseEntity<BookDTO> createBook(@Validated @RequestBody BookDTO bookDTO) {
+    BookDTO result = bookService.createBook(bookDTO);
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
   @PutMapping(path = "/title")
-  public ResponseEntity<BookDetailDTO> updateBook(@RequestParam("oldTitle") String oldTitle,
-      @RequestParam("newTitle") String newTitle) {
+  public ResponseEntity<BookDetailDTO> updateBook(
+      @Size(max = 25, min = 5) @NotBlank @RequestParam("oldTitle") String oldTitle,
+      @Size(max = 25, min = 5) @NotBlank @RequestParam("newTitle") String newTitle) {
     BookDetailDTO bookDTOUpdate = bookService.updateBook(oldTitle, newTitle);
-    boolean bookDTONotEmpty = StringUtils.isNotEmpty(bookDTOUpdate.toString());
-    return bookDTONotEmpty ? new ResponseEntity<>(bookDTOUpdate, HttpStatus.OK)
-        : new ResponseEntity<>(HttpStatus.BAD_GATEWAY);
+    return new ResponseEntity<>(bookDTOUpdate, HttpStatus.OK);
   }
 
   @PutMapping(path = "/category")
   public ResponseEntity<BookDetailDTO> updateBookCategory(
-      @RequestParam("title") String title, @RequestParam("category") String name) {
-    BookDetailDTO result = bookService.addBookCategory(title, name);
-    return StringUtils.isEmpty(result.getTitle()) ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
-        : new ResponseEntity<>(result, HttpStatus.OK);
+      @Size(max = 25, min = 5) @NotBlank @RequestParam("title") String title,
+      @Size(max = 25, min = 5) @NotBlank @RequestParam("categoryTitle") String categoryTitle) {
+    BookDetailDTO result = bookService.updateBookCategory(title, categoryTitle);
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
   @DeleteMapping(path = "/{id}")
-  public ResponseEntity<HttpStatus> deleteBook(@PathVariable("id") long id) {
-    try {
-      bookService.deleteBook(id);
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    } catch (Exception e) {
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  public ResponseEntity<HttpStatus> deleteBook(@Validated @PathVariable("id") long id) {
+    bookService.deleteBook(id);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   @DeleteMapping
   public ResponseEntity<HttpStatus> deleteAllBooks() {
-    try {
-      bookService.deleteAllBooks();
-      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    } catch (Exception e) {
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    bookService.deleteAllBooks();
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   @GetMapping(path = "/public")
   public ResponseEntity<List<BookPublicDTO>> findByPublished() {
-    try {
-      List<BookPublicDTO> books = bookService.findByPublished();
-      return books.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
-          : new ResponseEntity<>(books, HttpStatus.OK);
-    } catch (Exception e) {
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    List<BookPublicDTO> books = bookService.findByPublished();
+    return books.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(books, HttpStatus.OK);
   }
 
   @GetMapping(path = "/category")
   public ResponseEntity<List<BookDetailDTO>> findByCategory(
       @PathParam("Category") String category) {
     List<BookDetailDTO> bookCategory = bookService.getBookCategory(category);
-    return bookCategory.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
-        : new ResponseEntity<>(bookCategory, HttpStatus.OK);
+    return new ResponseEntity<>(bookCategory, HttpStatus.OK);
   }
 
   @GetMapping(path = "/price_greater_or_equal")
   public ResponseEntity<List<BookDetailDTO>> findByPrice(@PathParam("Price") long price) {
     List<BookDetailDTO> result = bookService.getBookByPrice(price);
-    return result.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
-        : new ResponseEntity<>(result, HttpStatus.OK);
+    return new ResponseEntity<>(result, HttpStatus.OK);
   }
 
 }

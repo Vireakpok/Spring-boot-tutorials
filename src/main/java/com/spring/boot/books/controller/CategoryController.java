@@ -8,6 +8,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,21 +26,13 @@ public class CategoryController {
 
   @PostMapping
   public ResponseEntity<CategoryDetailDTO> saveCategory(
-      @RequestBody CategoryDetailDTO categoryDetailDTO) {
-    try {
-      Optional<CategoryDetailDTO> result = categoryService.saveCategory(categoryDetailDTO);
-      return result.map(detailDTO -> new ResponseEntity<>(detailDTO, HttpStatus.OK))
-          .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE));
-    } catch (Exception e) {
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+      @Validated @RequestBody CategoryDetailDTO categoryDetailDTO) {
+    return new ResponseEntity<>(categoryService.saveCategory(categoryDetailDTO), HttpStatus.OK);
   }
 
   @GetMapping
   public ResponseEntity<List<CategoryDetailDTO>> getCategories() {
-    List<CategoryDetailDTO> result = categoryService.getAllCategory();
-    return result.isEmpty() ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
-        : new ResponseEntity<>(result, HttpStatus.OK);
+    return new ResponseEntity<>(categoryService.getAllCategory(), HttpStatus.OK);
   }
 
   @PutMapping
