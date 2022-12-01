@@ -16,7 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 @Slf4j
-public class GlobalBookExceptionHandler extends ResponseEntityExceptionHandler {
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler(BookNoContentException.class)
   @ResponseStatus(value = HttpStatus.NO_CONTENT)
@@ -78,5 +78,29 @@ public class GlobalBookExceptionHandler extends ResponseEntityExceptionHandler {
             .concat(request.getLocale().toString()));
     log.error(ex.getMessage(), ex);
     return new ResponseEntity<>(bookExceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  @ExceptionHandler(RoleNotFoundException.class)
+  public final ResponseEntity<Object> roleNotFoundHandler(RoleNotFoundException ex) {
+    log.error(ex.getMessage(), ex);
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+  }
+
+  @ExceptionHandler(RoleExistException.class)
+  public final ResponseEntity<Object> roleExistHandler(RoleExistException ex) {
+    log.error(ex.getMessage(), ex);
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+  }
+
+  @ExceptionHandler(EmailExistException.class)
+  public final ResponseEntity<Object> emailExceptionHandler(EmailExistException ex) {
+    log.error(ex.getMessage(), ex);
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+  }
+
+  @ExceptionHandler(JwtIOException.class)
+  public ResponseEntity<Object> jwtIOHandler(JwtIOException ex) {
+    log.error(ex.getMessage(), ex);
+    return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

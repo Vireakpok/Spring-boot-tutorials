@@ -1,3 +1,5 @@
+server:
+  port: 8080
 spring:
   profiles:
     active:
@@ -22,3 +24,8 @@ SpringDoc:
   swagger-ui:
     path: /swagger-ui-custom.html
     operationsSorter: method
+security:
+  jwt:
+    secret: "firestormfirestormfirestormfirestormfirestormfirestorm"
+    expires-date: 2
+    issuer: http://localhost:${server.port}
