@@ -1,4 +1,4 @@
-package com.spring.boot.books.config;
+package com.spring.boot.books.config.security;
 
 import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Bean;

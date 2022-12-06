@@ -1,5 +1,10 @@
-package com.spring.boot.books.config;
+package com.spring.boot.books.config.security;
 
+import com.spring.boot.books.config.security.jwt.JwtAuthenticationEntryPoint;
+import com.spring.boot.books.config.security.jwt.JwtConfig;
+import com.spring.boot.books.config.security.jwt.JwtCustomAuthentication;
+import com.spring.boot.books.config.security.jwt.JwtCustomToken;
+import com.spring.boot.books.config.security.jwt.JwtTokenFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,14 +23,16 @@ public class SecurityConfiguration {
   private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
   private final JwtConfig jwtConfig;
   private final CustomAuthenticationManager customAuthenticationManager;
+  private final JwtCustomAuthentication customAuthentication;
+  private final JwtCustomToken customToken;
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf().disable()
         .authorizeRequests()
         .antMatchers("/resources/", "/webjars/", "/assets/").permitAll()
-        .antMatchers("/login").permitAll()
-        .antMatchers("/**").permitAll()
+        .antMatchers("api/v1/auth/token").permitAll()
+        .antMatchers("/swagger-ui-custom.html", "/api-docs/**", "/swagger-ui/**").permitAll()
         .anyRequest()
         .authenticated()
         .and()
@@ -35,11 +42,11 @@ public class SecurityConfiguration {
         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
         .and()
         .addFilter(
-            new JwtUsernameAndPasswordAuthenticationFilter(
+            new UsernameAndPasswordAuthenticationFilter(
                 customAuthenticationManager
-                , jwtConfig))
+                , jwtConfig, customAuthentication, customToken))
         .addFilterBefore(new JwtTokenFilter(jwtConfig),
-            JwtUsernameAndPasswordAuthenticationFilter.class);
+            UsernameAndPasswordAuthenticationFilter.class);
     return http.build();
   }
 

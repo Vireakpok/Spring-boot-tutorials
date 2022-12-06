@@ -1,4 +1,4 @@
-package com.spring.boot.books.config;
+package com.spring.boot.books.config.security;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Value;

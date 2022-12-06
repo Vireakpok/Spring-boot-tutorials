@@ -1,5 +1,6 @@
-package com.spring.boot.books.config;
+package com.spring.boot.books.config.security;
 
+import com.spring.boot.books.config.security.PasswordBCryptEncoder;
 import com.spring.boot.books.constant.UserConstant;
 import com.spring.boot.books.service.CustomUserDetailsService;
 import lombok.AllArgsConstructor;

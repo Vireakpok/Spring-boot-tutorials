@@ -1,4 +1,4 @@
-package com.spring.boot.books.config;
+package com.spring.boot.books.config.security.jwt;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,4 +15,6 @@ public class JwtConfig {
   @Value("${security.jwt.expires-date}")
   private Long expiresDate;
   private String jwtPrefix = "Bearer ";
+  private String jwtScheme = getJwtPrefix().replace(" ", "");
+  private String jwtFormat = "JWT";
 }

@@ -1,4 +1,4 @@
-package com.spring.boot.books.config;
+package com.spring.boot.books.config.security.jwt;
 
 
 import static ch.qos.logback.core.CoreConstants.EMPTY_STRING;
