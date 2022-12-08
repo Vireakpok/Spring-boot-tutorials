@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("api/v1/users")
 @AllArgsConstructor
-@Validated
 public class UserController {
 
   private final UserService userService;
@@ -35,7 +34,7 @@ public class UserController {
 
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
-  public ResponseEntity<UserDetailsDTO> save(@RequestBody UserDetailsDTO userDTO) {
+  public ResponseEntity<UserDetailsDTO> save(@Validated @RequestBody UserDetailsDTO userDTO) {
     return ResponseEntity.ok(userService.saveUser(userDTO));
   }
 
