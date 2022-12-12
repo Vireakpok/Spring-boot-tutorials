@@ -3,6 +3,7 @@ package com.spring.boot.books.service;
 import com.spring.boot.books.config.ModelMapperConfig;
 import com.spring.boot.books.constant.UserConstant;
 import com.spring.boot.books.dto.RoleDTO;
+import com.spring.boot.books.dto.UpdateRoleDTO;
 import com.spring.boot.books.entity.Role;
 import com.spring.boot.books.exception.RoleExistException;
 import com.spring.boot.books.exception.RoleNotFoundException;
@@ -28,16 +29,17 @@ public class RoleService {
     return role;
   }
 
-  public RoleDTO updateRole(String oldName, String newName) {
-    Role result = roleRepository.findByName(oldName).orElseThrow(
+  public RoleDTO updateRole(UpdateRoleDTO user) {
+    Role result = roleRepository.findByName(user.getName()).orElseThrow(
         () -> new RoleNotFoundException(
-            oldName.concat(" ").concat(UserConstant.ROLE_NOT_EXIST))
+            user.getName().concat(" ").concat(UserConstant.ROLE_NOT_EXIST))
     );
-    if (!oldName.equalsIgnoreCase(newName) && roleRepository.existsByNameLikeIgnoreCase(newName)) {
+    if (!user.getName().equalsIgnoreCase(user.getNewName())
+        && roleRepository.existsByNameLikeIgnoreCase(user.getNewName())) {
       throw new RoleExistException(
-          newName.concat(" ").concat(UserConstant.IS_ALREADY_EXIST));
+          user.getNewName().concat(" ").concat(UserConstant.IS_ALREADY_EXIST));
     }
-    result.setName(newName);
+    result.setName(user.getNewName());
     return config.modelMapper().map(roleRepository.save(result), RoleDTO.class);
   }
 

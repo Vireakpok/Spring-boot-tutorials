@@ -27,11 +27,12 @@ public class SecurityConfiguration {
   private final JwtCustomToken customToken;
 
   @Bean
+  @SuppressWarnings({"java:S4502"})
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf().disable()
         .authorizeRequests()
         .antMatchers("/resources/", "/webjars/", "/assets/").permitAll()
-        .antMatchers("api/v1/auth/token").permitAll()
+        .antMatchers("/api/v1/auth/token").permitAll()
         .antMatchers("/swagger-ui-custom.html", "/api-docs/**", "/swagger-ui/**").permitAll()
         .anyRequest()
         .authenticated()

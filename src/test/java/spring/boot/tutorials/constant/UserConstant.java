@@ -1,6 +1,7 @@
 package spring.boot.tutorials.constant;
 
 import com.spring.boot.books.dto.RoleDTO;
+import com.spring.boot.books.dto.UpdateRoleDTO;
 import com.spring.boot.books.dto.UserDetailsDTO;
 import java.util.List;
 import lombok.AccessLevel;
@@ -11,7 +12,7 @@ import lombok.ToString;
 @ToString
 public class UserConstant {
 
-  public static final String URL = "/users";
+  public static final String URL = "/api/v1/users";
   public static final String BLANK = "";
   public static final UserDetailsDTO MOCK_USER = new UserDetailsDTO("firestorm",
       "vireaksstorm@gmail.com", "firestorm", List.of(new RoleDTO("ROLE_ADMIN")));

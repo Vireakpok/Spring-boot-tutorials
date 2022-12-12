@@ -68,7 +68,7 @@ class RoleServiceTest {
     when(roleRepository.findByName(anyString())).thenReturn(Optional.of(oldRole));
 
     Assertions.assertThrows(RoleExistException.class,
-        () -> roleService.updateRole(oldRole.getName(), newRole.getName()));
+        () -> roleService.updateRole(RoleConstant.ROLE_UPDATE_DTO));
   }
 
   @Test
@@ -79,7 +79,7 @@ class RoleServiceTest {
     when(roleRepository.findByName(anyString())).thenReturn(Optional.empty());
 
     Assertions.assertThrows(RoleNotFoundException.class,
-        () -> roleService.updateRole(role.getName(), role.getName()));
+        () -> roleService.updateRole(RoleConstant.ROLE_UPDATE_DTO));
   }
 
   @Test
@@ -89,7 +89,7 @@ class RoleServiceTest {
 
     when(roleRepository.findByName(any())).thenReturn(Optional.of(oldRole));
     when(roleRepository.save(any())).thenReturn(oldRole);
-    RoleDTO actual = roleService.updateRole(oldRole.getName(), oldRole.getName());
+    RoleDTO actual = roleService.updateRole(RoleConstant.ROLE_SELF_UPDATE_DTO);
 
     assertEquals(RoleConstant.ROLE_DTO.getName(), actual.getName());
   }
@@ -118,7 +118,7 @@ class RoleServiceTest {
     when(roleRepository.findByName(anyString())).thenReturn(Optional.of(oldRole));
     Role newRole = new Role();
     newRole.setName(RoleConstant.NEW_ROLE_DTO.getName());
-    RoleDTO actual = roleService.updateRole(oldRole.getName(), newRole.getName());
+    RoleDTO actual = roleService.updateRole(RoleConstant.ROLE_UPDATE_DTO);
 
     assertNotNull(actual);
     assertEquals(oldRole.getName(), actual.getName());

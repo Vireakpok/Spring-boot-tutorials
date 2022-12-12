@@ -115,10 +115,17 @@ Following are step to setup project with spring-boot-tutorial:
    - Apply below application.properties to application.yml instead.
    ![img_4.png](other/resource/img_4.png)
 5. Integrate project with SonarQube:
-   1. Apply patch in you current Branch
+   1. Add these dependencies to your project pom.xml
+      ```
+        <plugin>
+           <goupId>org.sonarsource.scanner.maven</groupId>
+           <atifactId>sonar-maven-plugin</artifactId>
+           <version>3.6.0.1398</version>
+        </plugin>
+      ```
    2. After finish each feature, run below command to analyze projcet:
        - mvn clean install
-       - mvn sonar:sonar
+       - mvn sonar:sonar -Dsonar.host.url=http://10.2.50.83:9000 -Dsonar.projectkey=training_library_mngt -Dsonar.login=3e632fa36dad6edbffd8b0a1d9765d6439da49cc
    3. View result and fix code by go to
    >>    http://10.2.50.83:9000
    >>    go to you project
