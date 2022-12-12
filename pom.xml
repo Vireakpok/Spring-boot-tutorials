@@ -33,6 +33,9 @@
 	<properties>
 		<java.version>11</java.version>
 		<maven.test.skip>true</maven.test.skip>
+    <sonar.host.url>http://10.2.50.83:9000</sonar.host.url>
+    <sonar.projectkey>training_library_mngt</sonar.projectkey>
+    <sonar.login>3e632fa36dad6edbffd8b0a1d9765d6439da49cc</sonar.login>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -130,6 +133,11 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.sonarsource.scanner.maven</groupId>
+				<artifactId>sonar-maven-plugin</artifactId>
+				<version>3.6.0.1398</version>
 			</plugin>
 		</plugins>
 	</build>

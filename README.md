@@ -20,7 +20,7 @@ Following are step to setup project with spring-boot-tutorial:
 
 **File menu => Settings => Plugins:**
 
-![img_8.png](img_8.png)
+![img_8.png](other/resource/img_8.png)
 
 ### Using intillij-java-google-style instead of using with plugin:
  - Following this [intillij-java-google-style](https://github.com/HPI-Information-Systems/Metanome/wiki/Installing-the-google-styleguide-settings-in-intellij-and-eclipse) to setup code format.
@@ -29,7 +29,7 @@ Following are step to setup project with spring-boot-tutorial:
 ### Following convention for folder and package structure:
 **Note**: ask team leader for more details.
 
-  ![img.png](img.png)
+  ![img.png](other/resource/img.png)
 
 ### In the following will apply knowledge base of spring boot.
 **Notes**: Follow below step to work first. Before move on to another step.
@@ -74,11 +74,11 @@ Following are step to setup project with spring-boot-tutorial:
      - **Note**:
          - Configure PostgreSQL driver for intellij using URL option to work first.
            
-           ![img_6.png](img_6.png)
+           ![img_6.png](other/resource/img_6.png)
        
          - Add below option properties of PostgreSQL should be connected to PostgreSQL driver.
        
-           ![img_5.png](img_5.png)
+           ![img_5.png](other/resource/img_5.png)
         
 2. Working with Swagger(OpenAPI):
    - Make sure the following property locate in `<dependencies>` block of pom.xml
@@ -101,7 +101,7 @@ Following are step to setup project with spring-boot-tutorial:
           </dependency>
       ```
    - Make sure Swagger option properties available in application.properties.
-     ![img_7.png](img_7.png)
+     ![img_7.png](other/resource/img_7.png)
 3. Working with DTO, Entity and ModelMapper:
    - Make sure the following property locate in `<dependencies>` block of pom.xml
       ```
@@ -113,4 +113,13 @@ Following are step to setup project with spring-boot-tutorial:
       ```
 4. Working with yml file structure concept:
    - Apply below application.properties to application.yml instead.
-   ![img_4.png](img_4.png)
+   ![img_4.png](other/resource/img_4.png)
+5. Integrate project with SonarQube:
+   1. Apply patch in you current Branch
+   2. After finish each feature, run below command to analyze projcet:
+       - mvn clean install
+       - mvn sonar:sonar
+   3. View result and fix code by go to
+   >>    http://10.2.50.83:9000
+   >>    go to you project
+      user: admin, pwd: 123
