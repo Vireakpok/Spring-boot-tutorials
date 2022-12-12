@@ -114,7 +114,41 @@ Following are step to setup project with spring-boot-tutorial:
 4. Working with yml file structure concept:
    - Apply below application.properties to application.yml instead.
    ![img_4.png](other/resource/img_4.png)
-5. Integrate project with SonarQube:
+5. Working with JPA specification:
+   - Make sure the following properties locate in `<dependency>` block of pom.xml
+   ```
+        <dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-jpamodelgen</artifactId>
+			<scope>provided</scope>
+		</dependency>
+   ```
+6. Working with Spring security using jwt token:
+   - Make sure the following properties locate in `<dependency>` block of pom.xml
+   ```
+        <dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.11.5</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.11.5</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.11.5</version>
+			<scope>runtime</scope>
+		</dependency>
+   ```
+7. Integrate project with SonarQube:
    1. Add these dependencies to your project pom.xml
       ```
         <plugin>
@@ -127,6 +161,6 @@ Following are step to setup project with spring-boot-tutorial:
        - mvn clean install
        - mvn sonar:sonar -Dsonar.host.url=http://10.2.50.83:9000 -Dsonar.projectkey=training_library_mngt -Dsonar.login=3e632fa36dad6edbffd8b0a1d9765d6439da49cc
    3. View result and fix code by go to
-   >>    http://10.2.50.83:9000
-   >>    go to you project
-      user: admin, pwd: 123
+      >    http://10.2.50.83:9000
+   
+      >    go to you project with user: admin, pwd: 123
